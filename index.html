@@ -65,6 +65,11 @@ nav button.on{color:var(--main)}
     </div>
   </div>
   <div class="card"><h2>銷售紀錄</h2><div id="list"></div></div>
+  <div class="card" id="demoCard" hidden style="border:1px dashed var(--main)">
+    <h2>🧪 測試模式</h2>
+    <div class="row"><button class="ghost" id="demoLoad">載入範例資料</button><button class="ghost" id="demoClear">清除全部紀錄</button></div>
+    <div class="note">只有網址帶 ?demo=1 才看得到這區。</div>
+  </div>
   <div class="card">
     <h2>備份與還原</h2>
     <label>備份信箱</label><input id="mail" type="email" placeholder="your@gmail.com">
@@ -337,6 +342,21 @@ $('rsBtn').onclick=()=>{
   if(!rows.length){alert('找不到備份內容，請確認有把信裡的內文整段貼上');return}
   if(!confirm(`這份備份有 ${rows.length} 筆紀錄，會取代目前 app 裡的紀錄，確定要還原嗎？`))return;
   sales=rows;save();dirty=0;ss(DK,0);$('rs').value='';render();alert('還原完成');
+};
+
+// ===== 測試模式（網址帶 ?demo=1 才出現）=====
+try{if(new URLSearchParams(location.search).get('demo')==='1')$('demoCard').hidden=false}catch(e){}
+$('demoLoad').onclick=()=>{
+  if(!confirm('會用 8 筆範例資料取代目前所有紀錄，確定嗎？'))return;
+  const ago=(n,h)=>{const t=new Date(Date.now()-n*864e5);return `${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}T${pad(h)}:00`};
+  sales=[['高音','單頭','S704','金漆',18500,'王小明',230],['中音','','A312','黑鎳',32000,'陳怡君',200],['次中音','','T108','金漆',45000,'林志豪',160],['高音','雙頭','S815','古銅',24000,'張雅婷',120],['中音','','A320','金漆',34500,'黃建宏',80],['上低音','','B021','金漆',68000,'李佩珊',45],['高音','單頭','S709','黑鎳',19000,'吳承翰',20],['中音','','A331','古銅',33000,'周家豪',6]]
+    .map((r,i)=>({id:Date.now()+i,type:r[0],head:r[1],code:r[2],finish:r[3],price:r[4],buyer:r[5],time:ago(r[6],10+i)}));
+  save();markDirty();render();show('home');
+};
+$('demoClear').onclick=()=>{
+  if(!confirm('會刪除目前所有紀錄，無法復原，確定嗎？'))return;
+  if(!confirm('再確認一次：真的要全部清除？'))return;
+  sales=[];save();dirty=0;ss(DK,0);render();
 };
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
