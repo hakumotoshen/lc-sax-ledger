@@ -206,7 +206,7 @@ function drawLine(id,fn,fn2){
   const t0=Math.min(...sales.map(s=>+new Date(s.time))),now=Date.now(),t1=Math.max(now,t0+864e5);
   const N=60,pts=[];
   for(let i=0;i<=N;i++){const t=new Date(t0+(t1-t0)*i/N);pts.push({t,v:fn(t),v2:fn2?fn2(t):0})}
-  const W=340,H=190,L=44,B=24,T=14,max=Math.max(1,...pts.map(p=>p.v)),
+  const W=340,H=190,L=44,B=24,T=28,max=Math.max(1,...pts.map(p=>p.v)),
     X=i=>L+(W-L-8)*i/N,Y=v=>H-B-(H-B-T)*v/max;
   const path=k=>pts.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(p[k]).toFixed(1)}`).join('');
   const d=t=>`${t.getFullYear()}/${t.getMonth()+1}/${t.getDate()}`;
