@@ -101,6 +101,7 @@ nav button.on{color:var(--main)}
 <!-- 統計 -->
 <section class="page" id="p-stats">
   <div class="card"><h2>售出類型比例（件數）</h2><div id="pie"></div><div class="legend" id="legend"></div></div>
+  <div class="card"><h2>各類型賣出支數</h2><div id="typeBars"></div></div>
   <div class="card"><h2>賣出累積金額</h2><div id="lineSales"></div></div>
   <div class="card">
     <h2>銷售長條圖</h2>
@@ -172,7 +173,17 @@ function render(){
   $('list').innerHTML=sorted.length?sorted.map(x=>`<div class="item"><div>${esc(label(x))}<br><small>${x.buyer?esc(x.buyer)+'・':''}${x.time.replace('T',' ')}</small></div><div><span class="p">${fmt(x.price)}</span><button class="x" data-id="${x.id}" aria-label="刪除">×</button></div></div>`).join(''):'<div class="empty">還沒有紀錄</div>';
   drawPie();drawLine('lineSales',t=>{const v=sales.filter(s=>new Date(s.time)<=t).reduce((a,s)=>a+s.price,0);return v},null);
   drawLine('lineComm',t=>commAt(t).tot,t=>commAt(t).base);
-  drawBars();renderBanner();
+  drawBars();drawTypeBars();renderBanner();
+}
+
+function drawTypeBars(){
+  const rows=CATS.map((k,i)=>{const l=sales.filter(s=>catOf(s)===k);return {k,i,n:l.length,sum:l.reduce((a,s)=>a+s.price,0)}})
+    .filter(r=>r.n||r.k!=='其他');
+  if(!sales.length){$('typeBars').innerHTML='<div class="empty">還沒有資料</div>';return}
+  const max=Math.max(1,...rows.map(r=>r.n));
+  $('typeBars').innerHTML=rows.map(r=>`<div style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;font-size:14px"><span>${r.k}</span><span><b>${r.n}</b> 支・${fmt(r.sum)}</span></div>
+    <div style="height:10px;background:var(--line);border-radius:5px;margin-top:4px"><div style="height:100%;width:${r.n/max*100}%;background:${COLORS[r.i]};border-radius:5px"></div></div></div>`).join('');
 }
 
 function drawPie(){
