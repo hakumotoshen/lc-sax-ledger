@@ -1,0 +1,9 @@
+{
+  "name": "薩克斯風銷售帳本",
+  "short_name": "薩克斯帳本",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#faf7f0",
+  "theme_color": "#b8860b",
+  "icons": []
+}
